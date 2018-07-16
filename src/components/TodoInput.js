@@ -1,51 +1,100 @@
 import React, { Component} from 'react';
 import DisplayList from './DisplayList';
 
+var rand = require('random-key');
+
 
 class TodoInput extends Component {
     constructor () {
         super();
-        this.state = { text: '', items:['run', 'walk', 'swim'] } 
+        this.state = { title: '', 
+        todos:[ { title: 'run', done: false, id: 1},
+         {title: 'walk', done: true, id: 2}, 
+         {title: 'swim', done: false, id: 3} 
+        ] };
     } 
+
+handleDone (idMarkedAsDone) {
+    var _todos = this.state.todos;
+    var todo = _todos.filter((todo) => {
+        return todo.id === idMarkedAsDone;
+    })[0];
+
+    todo.done = !todo.done;
+
+    this.setState({todos: _todos});
+}
 
 handleSubmit(e) {
     e.preventDefault();
-    var text = this.state.text
-    var newItems = this.state.items.concat(text);
-    // console.log("submit", text);
-    this.setState({ text:'', items: newItems })
+    var title = this.state.title;
+    var newTodos = this.state.todos.concat({ title: title, 
+        id: rand.generate(), done: false });
+    // console.log("submit", title);
+    this.setState({ title: '', todos: newTodos });
     // console.log(newItems);
-};
+}
 
 handleChange(e) {
-    var text = e.target.value;
-    this.setState({ text: text });
+    var title = e.target.value;
+    this.setState({ title: title });
 };
 
-handleDelete(itemToDelete){
-var newItems = this.state.items.filter((_item) => {
-    return _item !== itemToDelete
+handleDelete(idToDelete) {
+var newTodos = this.state.todos.filter( (todo) => {
+    return todo.id !== idToDelete
 
 });
-this.setState( {items: newItems });
+
+this.setState( {todos: newTodos });
 
 }
 
-    render() {
-        return(
-            <div className="todo-wrapper">
-                <h3>Todo list</h3>
+allTasks () {
+    // console.log('prueba');
+    this.setState({ todos: this.state.todos });
+  }
+
+  completedTasks (event) {
+    // console.log('complete');
+    var newTodos = this.state.todos.filter((todo) => { return todo.done});
+    this.setState({ todos: newTodos });
+  }
+
+  pendingTasks (event) {
+    // console.log('pending');
+    var newTodos = this.state.todos.filter((todo) => { return !todo.done});
+    this.setState({ todos: newTodos });
+  }
+
+    render () {
+        return (
+        <div>
+            <h3>React to-do-list</h3>
+                <div>
                 <form onSubmit={ this.handleSubmit.bind(this)}>
-                <input 
-                onChange={ this.handleChange.bind(this)} value={this.state.text} />
+                <input type="text"
+                onChange={ this.handleChange.bind(this)} 
+                value={this.state.title} />
                 <button>Add</button>
                 </form>
-                
-                <DisplayList items={this.state.items}
+                </div>
+
+                <DisplayList 
+                handleDone={this.handleDone.bind(this)}
+                todos={this.state.todos}
                 handleDelete={this.handleDelete.bind(this)}
                 />
-            </div>
-
+                
+                    <button onClick={this.allTasks.bind(this)}>All tasks</button>
+                    <button onClick={this.completedTasks.bind(this)}>Completed tasks</button>
+                    <button onClick={this.pendingTasks.bind(this)}>Pending tasks</button>  
+                    All: ({this.state.todos.length})
+                    Completed: ({this.state.todos.filter((todo) => { return todo.done }).length})
+                    Incomplete:({this.state.todos.filter((todo) => { return !todo.done }).length})
+                
+        </div>
+            
         );
     }
 }
