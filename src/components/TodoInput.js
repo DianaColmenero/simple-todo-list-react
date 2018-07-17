@@ -11,7 +11,13 @@ class TodoInput extends Component {
         todos:[ { title: 'run', done: false, id: 1},
          {title: 'walk', done: true, id: 2}, 
          {title: 'swim', done: false, id: 3} 
-        ] };
+        ],
+        backUpTodos:[ { title: 'run', done: false, id: 1},
+         {title: 'walk', done: true, id: 2}, 
+         {title: 'swim', done: false, id: 3} 
+        ],
+        // nextId: 4
+    };
     } 
 
 handleDone (idMarkedAsDone) {
@@ -31,7 +37,7 @@ handleSubmit(e) {
     var newTodos = this.state.todos.concat({ title: title, 
         id: rand.generate(), done: false });
     // console.log("submit", title);
-    this.setState({ title: '', todos: newTodos });
+    this.setState({ title: '', todos: newTodos, backUpTodos: newTodos });
     // console.log(newItems);
 }
 
@@ -52,19 +58,23 @@ this.setState( {todos: newTodos });
 
 allTasks () {
     // console.log('prueba');
-    this.setState({ todos: this.state.todos });
+    var backUpTodos = this.state.todos.slice();
+    // console.log(backUpTodos);
+    backUpTodos.push();
+    this.setState({ todos: this.state.backUpTodos });
   }
 
-  completedTasks (event) {
+  completedTasks (e) {
     // console.log('complete');
-    var newTodos = this.state.todos.filter((todo) => { return todo.done});
-    this.setState({ todos: newTodos });
+    var backUpTodos = this.state.backUpTodos.filter((todo) => { return todo.done});
+    // console.log(backUpTodos);
+    this.setState({ todos: backUpTodos });
   }
 
-  pendingTasks (event) {
+  pendingTasks (e) {
     // console.log('pending');
-    var newTodos = this.state.todos.filter((todo) => { return !todo.done});
-    this.setState({ todos: newTodos });
+    var backUpTodos = this.state.backUpTodos.filter((todo) => { return !todo.done});
+    this.setState({ todos: backUpTodos });
   }
 
     render () {
